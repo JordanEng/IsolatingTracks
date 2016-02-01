@@ -1,8 +1,11 @@
 /**
  * Created by ros_jheng on 1/20/2016.
  */
+
 import java.io.*;
 import javax.sound.sampled.*;
+
+
 
 public class ReadingWAV {
 
@@ -27,5 +30,26 @@ public class ReadingWAV {
         long total = (audioInputStream.getFrameLength() *
                 format.getFrameSize() * 8) / format.getSampleSizeInBits();
         return total / format.getChannels();
+    }
+
+
+    public byte[] toByteArray() throws IOException {
+        InputStream is = audioInputStream;
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int nRead;
+        byte[] data = new byte[16384];
+
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+
+        try {
+            buffer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return buffer.toByteArray();
     }
 }
