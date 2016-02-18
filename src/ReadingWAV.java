@@ -20,9 +20,6 @@ public class ReadingWAV {
         return format;
     }
 
-    // Return the number of samples of all channels
-
-
     public byte[] toByteArray() throws IOException {
         InputStream is = audioInputStream;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
