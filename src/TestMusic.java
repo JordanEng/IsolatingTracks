@@ -1,6 +1,7 @@
 
 import java.io.*;
 import javax.sound.sampled.*;
+import java.util.*;
 import java.nio.ByteBuffer;
 
 public class TestMusic {
@@ -21,7 +22,7 @@ public class TestMusic {
     }
 
    // private static void testFft(double[] doubles) {
-    private static void testFFT(){
+    private static void testFFT() throws FileNotFoundException {
         int arraySize = 32768;
         double[] inputImag = new double[arraySize];
         double[] inputReal = new double[arraySize];
@@ -30,9 +31,13 @@ public class TestMusic {
             inputReal[i] = 0.0;
             inputImag[i] = 0.0;
         }
-
-        File timeSignal = new File("signal.txt");
-        // JORDAN. READ THESE COMMENTS: Use the value in signal.txt as your inputImag
+        Scanner timeSignal = new Scanner(new File("signal.txt"));
+        int i = 0;
+        while(timeSignal.hasNextDouble()) {
+            inputImag[i] = timeSignal.nextDouble();
+            timeSignal.nextDouble();
+            i++;
+        }
 
         /*for(int i = 0; i < doubles.length; i++){
             inputImag[i] = doubles[i];
@@ -41,8 +46,8 @@ public class TestMusic {
         double[] newArray = FFT.fft(inputReal, inputImag, true);
 
         // make it transform new array the other to see if it works.
-        for(double i: newArray) {
-           System.out.println(i);
+        for(double d: newArray) {
+           System.out.println(d);
         }
 
         double[] meow = FFT.fft(inputReal, newArray, false);
