@@ -6,23 +6,22 @@ import java.nio.ByteBuffer;
 
 public class TestMusic {
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException{
-        ReadingWAV audioRead = new ReadingWAV(new File("done.wav"));
-       // AudioFormat audioFormat = audioRead.getFormat();
+        ReadingWAV audioRead = new ReadingWAV(new File("magic.wav"));
         byte[] timeFrequencyArrayX = audioRead.toByteArray();
 
-       /* for(byte i: timeFrequencyArrayX){
+        for(byte i: timeFrequencyArrayX){
             System.out.println(i);
-        }*/
+        }
 
-       // double[] doubles = toDoubleArray(timeFrequencyArrayX, true);
-        //for(double i: doubles){
-        //    System.out.println(i);
-        //}
-        testFFT();
+        double[] doubles = toDoubleArray(timeFrequencyArrayX, true);
+//        for(double i: doubles){
+//            System.out.println(i);
+//        }
+
+        testFFT(doubles);
     }
 
-   // private static void testFft(double[] doubles) {
-    private static void testFFT() throws FileNotFoundException {
+    private static void testFFT(double[] doubles) throws FileNotFoundException {
         int arraySize = 32768;
         double[] inputImag = new double[arraySize];
         double[] inputReal = new double[arraySize];
@@ -31,32 +30,45 @@ public class TestMusic {
             inputReal[i] = 0.0;
             inputImag[i] = 0.0;
         }
-        Scanner timeSignal = new Scanner(new File("signal.txt"));
-        int i = 0;
-        while(timeSignal.hasNextDouble()) {
-            inputImag[i] = timeSignal.nextDouble();
-            timeSignal.nextDouble();
-            i++;
+
+        for(int i = 0; i < doubles.length; i++){
+            inputImag[i] = doubles[i];
         }
 
-        /*for(int i = 0; i < doubles.length; i++){
-            inputImag[i] = doubles[i];
-        }*/
 
         double[] newArray = FFT.fft(inputReal, inputImag, true);
+//        for(double i: newArray){
+//            System.out.println(i);
+//        }
 
-        // make it transform new array the other to see if it works.
-        for(double d: newArray) {
-           System.out.println(d);
+        //
+        // Test code below to reverse the transformation back to the original.
+        //
+
+       /* double[] newInputReal = new double[arraySize];
+        double[] newInputImag = new double[arraySize];
+        int ii = 0;
+        for (int i = 0; i < arraySize; i++){
+            newInputReal[i] = 0.0;
+            newInputImag[i] = 0.0;
+
+            newInputReal[ii] = newArray[i];
+            i++;
+            newInputImag[ii] = newArray[i];
+            ii++;
         }
 
-        double[] meow = FFT.fft(inputReal, newArray, false);
-        if (inputImag == meow){
+        double[] meow = FFT.fft(newInputReal, newInputImag, false);
+        for(double i : meow){
+            System.out.println(i);
+        }
+
+        if (inputImag[1] == meow[1]){
             System.out.println();
             System.out.println("yay");
         } else{
             System.out.println("boo");
-        }
+        }*/
     }
 
   /*  public static double[] toDoubleArray(byte[] byteArray){
