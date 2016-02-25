@@ -9,14 +9,14 @@ public class TestMusic {
         ReadingWAV audioRead = new ReadingWAV(new File("magic.wav"));
         byte[] timeFrequencyArrayX = audioRead.toByteArray();
 
-        for(byte i: timeFrequencyArrayX){
-            System.out.println(i);
-        }
-
-        double[] doubles = toDoubleArray(timeFrequencyArrayX, true);
-//        for(double i: doubles){
+//        for(byte i: timeFrequencyArrayX){
 //            System.out.println(i);
 //        }
+
+        double[] doubles = convert(timeFrequencyArrayX, timeFrequencyArrayX.length - 1);
+        for(double i: doubles){
+            System.out.println(i);
+        }
 
         testFFT(doubles);
     }
@@ -31,21 +31,25 @@ public class TestMusic {
             inputImag[i] = 0.0;
         }
 
-        for(int i = 0; i < doubles.length; i++){
-            inputImag[i] = doubles[i];
-        }
+        System.arraycopy(doubles, 0, inputImag, 0, doubles.length);
 
+//        for (double i: inputImag){
+//            System.out.println(i);
+//        }
 
         double[] newArray = FFT.fft(inputReal, inputImag, true);
-//        for(double i: newArray){
-//            System.out.println(i);
+
+//        if (newArray != null) {
+//            for(double i: newArray ){
+//                System.out.println(i);
+//            }
 //        }
 
         //
         // Test code below to reverse the transformation back to the original.
         //
 
-       /* double[] newInputReal = new double[arraySize];
+        double[] newInputReal = new double[arraySize];
         double[] newInputImag = new double[arraySize];
         int ii = 0;
         for (int i = 0; i < arraySize; i++){
@@ -62,52 +66,65 @@ public class TestMusic {
         for(double i : meow){
             System.out.println(i);
         }
-
-        if (inputImag[1] == meow[1]){
-            System.out.println();
-            System.out.println("yay");
-        } else{
-            System.out.println("boo");
-        }*/
+//
+//        if (inputImag[1] == meow[1]){
+//            System.out.println();
+//            System.out.println("yay");
+//        } else{
+//            System.out.println("boo");
+//        }
     }
 
-  /*  public static double[] toDoubleArray(byte[] byteArray){
-        int times = Double.SIZE / Byte.SIZE;
-        double[] doubles = new double[byteArray.length / times];
-        for(int i = 0; i < doubles.length; i++){
-            doubles[i] = ByteBuffer.wrap(byteArray, i*times, times).getDouble();
+    public static double[] convert(byte[] in, int idx) {
+        double[] ret;
+        if (idx == 0) {
+            ret = new double[in.length];
+            ret[0] = (double)in[0];
         }
-        return doubles;
-    }*/
-  public static final double[] toDoubleArray(byte[] inData, boolean byteSwap) {
-      int j = 0, upper, lower;
-      int length = inData.length / 8;
-      double[] outData = new double[length];
-      if (!byteSwap)
-          for (int i = 0; i < length; i++) {
-              j = i * 8;
-              upper = (((inData[j] & 0xff) << 24)
-                      + ((inData[j + 1] & 0xff) << 16)
-                      + ((inData[j + 2] & 0xff) << 8) + ((inData[j + 3] & 0xff) << 0));
-              lower = (((inData[j + 4] & 0xff) << 24)
-                      + ((inData[j + 5] & 0xff) << 16)
-                      + ((inData[j + 6] & 0xff) << 8) + ((inData[j + 7] & 0xff) << 0));
-              outData[i] = Double.longBitsToDouble((((long) upper) << 32)
-                      + (lower & 0xffffffffl));
-          }
-      else
-          for (int i = 0; i < length; i++) {
-              j = i * 8;
-              upper = (((inData[j + 7] & 0xff) << 24)
-                      + ((inData[j + 6] & 0xff) << 16)
-                      + ((inData[j + 5] & 0xff) << 8) + ((inData[j + 4] & 0xff) << 0));
-              lower = (((inData[j + 3] & 0xff) << 24)
-                      + ((inData[j + 2] & 0xff) << 16)
-                      + ((inData[j + 1] & 0xff) << 8) + ((inData[j] & 0xff) << 0));
-              outData[i] = Double.longBitsToDouble((((long) upper) << 32)
-                      + (lower & 0xffffffffl));
-          }
+        else {
+            ret = convert(in, idx-1);
+            ret[idx] = (double)in[idx];
+        }
+        return ret;
+    }
 
-      return outData;
-  }
+//    public static double[] toDoubleArray(byte[] byteArray){
+//        int times = Double.SIZE / Byte.SIZE;
+//        double[] doubles = new double[byteArray.length / times];
+//        for(int i = 0; i < doubles.length; i++){
+//            doubles[i] = ByteBuffer.wrap(byteArray, i*times, times).getDouble();
+//        }
+//        return doubles;
+//    }
+//  public static double[] toDoubleArray(byte[] inData, boolean byteSwap) {
+//      int j, upper, lower;
+//      int length = inData.length / 8;
+//      double[] outData = new double[length];
+//      if (!byteSwap)
+//          for (int i = 0; i < length; i++) {
+//              j = i * 8;
+//              upper = (((inData[j] & 0xff) << 24)
+//                      + ((inData[j + 1] & 0xff) << 16)
+//                      + ((inData[j + 2] & 0xff) << 8) + ((inData[j + 3] & 0xff)));
+//              lower = (((inData[j + 4] & 0xff) << 24)
+//                      + ((inData[j + 5] & 0xff) << 16)
+//                      + ((inData[j + 6] & 0xff) << 8) + ((inData[j + 7] & 0xff)));
+//              outData[i] = Double.longBitsToDouble((((long) upper) << 32)
+//                      + (lower & 0xffffffffL));
+//          }
+//      else
+//          for (int i = 0; i < length; i++) {
+//              j = i * 8;
+//              upper = (((inData[j + 7] & 0xff) << 24)
+//                      + ((inData[j + 6] & 0xff) << 16)
+//                      + ((inData[j + 5] & 0xff) << 8) + ((inData[j + 4] & 0xff)));
+//              lower = (((inData[j + 3] & 0xff) << 24)
+//                      + ((inData[j + 2] & 0xff) << 16)
+//                      + ((inData[j + 1] & 0xff) << 8) + ((inData[j] & 0xff)));
+//              outData[i] = Double.longBitsToDouble((((long) upper) << 32)
+//                      + (lower & 0xffffffffL));
+//          }
+//
+//      return outData;
+//  }
 }
