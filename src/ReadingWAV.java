@@ -46,8 +46,7 @@ public class ReadingWAV {
         // based on a user selection.
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-            int bytesPerFrame =
-                    audioInputStream.getFormat().getFrameSize();
+            int bytesPerFrame = audioInputStream.getFormat().getFrameSize();
             if (bytesPerFrame == AudioSystem.NOT_SPECIFIED) {
                 // some audio formats may have unspecified frame size
                 // in that case we may read any amount of bytes

@@ -13,7 +13,14 @@ public class TestMusic {
 //            System.out.println(i);
 //        }
 
-        double[] doubles = convert(timeFrequencyArrayX, timeFrequencyArrayX.length - 1);
+        double[] doubles = new double[timeFrequencyArrayX.length / 3];
+        for (int i = 0, j = 0; i != doubles.length; ++i, j += 3) {
+            doubles[i] = (double)( (timeFrequencyArrayX[j] & 0xff) |
+                    ((timeFrequencyArrayX[j+1] & 0xff) <<  8) |
+                    ( timeFrequencyArrayX[j+2]         << 16));
+        }
+
+//        double[] doubles = toDoubleArray(timeFrequencyArrayX);
         for(double i: doubles){
             System.out.println(i);
         }
@@ -39,11 +46,11 @@ public class TestMusic {
 
         double[] newArray = FFT.fft(inputReal, inputImag, true);
 
-//        if (newArray != null) {
-//            for(double i: newArray ){
-//                System.out.println(i);
-//            }
-//        }
+
+//         for (double i: newArray ){
+//             System.out.println(i);
+//         }
+
 
         //
         // Test code below to reverse the transformation back to the original.
@@ -63,9 +70,9 @@ public class TestMusic {
         }
 
         double[] meow = FFT.fft(newInputReal, newInputImag, false);
-        for(double i : meow){
-            System.out.println(i);
-        }
+//        for(double i : meow){
+//            System.out.println(i);
+//        }
 //
 //        if (inputImag[1] == meow[1]){
 //            System.out.println();
@@ -75,18 +82,25 @@ public class TestMusic {
 //        }
     }
 
-    public static double[] convert(byte[] in, int idx) {
-        double[] ret;
-        if (idx == 0) {
-            ret = new double[in.length];
-            ret[0] = (double)in[0];
+    public static double[] toDoubleArray(byte[] byteArr){
+        double[] arr=new double[byteArr.length];
+        for (int i=0;i<arr.length;i++){
+            arr[i]=byteArr[i];
         }
-        else {
-            ret = convert(in, idx-1);
-            ret[idx] = (double)in[idx];
-        }
-        return ret;
+        return arr;
     }
+//    public static double[] convert(byte[] in, int idx) {
+//        double[] ret;
+//        if (idx == 0) {
+//            ret = new double[in.length];
+//            ret[0] = (double)in[0];
+//        }
+//        else {
+//            ret = convert(in, idx-1);
+//            ret[idx] = (double)in[idx];
+//        }
+//        return ret;
+//    }
 
 //    public static double[] toDoubleArray(byte[] byteArray){
 //        int times = Double.SIZE / Byte.SIZE;
@@ -96,6 +110,7 @@ public class TestMusic {
 //        }
 //        return doubles;
 //    }
+
 //  public static double[] toDoubleArray(byte[] inData, boolean byteSwap) {
 //      int j, upper, lower;
 //      int length = inData.length / 8;
