@@ -8,38 +8,8 @@ public class ReadingWAV {
     private AudioFormat format;
     private byte[] audioBytes;
 
-    public ReadingWAV(File file)
-            throws UnsupportedAudioFileException, IOException {
-//        audioInputStream = AudioSystem.getAudioInputStream(file);
-//        format = audioInputStream.getFormat();
-//    }
-//
-//    // Return audio format, and through it, most properties of
-//    // the audio file: sample size, sample rate, etc.
-//    public AudioFormat getFormat() {
-//        System.out.println(audioInputStream.toString());
-//        return format;
-//    }
-//
-//    public byte[] toByteArray() throws IOException {
-//        InputStream is = audioInputStream;
-//        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-//
-//        int nRead;
-//        byte[] data = new byte[32768];
-//
-//        while ((nRead = is.read(data, 0, data.length)) != -1) {
-//            buffer.write(data, 0, nRead);
-//        }
-//
-//        try {
-//            buffer.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return buffer.toByteArray();
-//    }
+    public ReadingWAV(File file){
+
         int totalFramesRead = 0;
 
         // somePathName is a pre-existing string whose value was
@@ -67,10 +37,10 @@ public class ReadingWAV {
                     // now in the audioBytes array...
                 }
             } catch (Exception ex) {
-                // Handle the error...
+                System.err.print(ex);
             }
         } catch (Exception e) {
-            // Handle the error...
+            System.err.print(e);
         }
     }
 
