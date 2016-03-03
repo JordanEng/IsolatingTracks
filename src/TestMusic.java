@@ -1,37 +1,44 @@
 
 import java.io.*;
 import javax.sound.sampled.*;
-
+import java.nio.ByteBuffer;
 
 public class TestMusic {
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException{
-        ReadingWAV audioRead = new ReadingWAV(new File("doorbell.wav"));
+        ReadingWAV audioRead = new ReadingWAV(new File("magic.wav"));
         byte[] timeFrequencyArrayX = audioRead.toByteArray();
 
 //        for(byte i: timeFrequencyArrayX){
 //            System.out.println(i);
 //        }
 
-        double[] doubles = new double[timeFrequencyArrayX.length / 3];
-        for (int i = 0, j = 0; i != doubles.length; ++i, j += 3) {
-            doubles[i] = (double)( (timeFrequencyArrayX[j] & 0xff) |
-                    ((timeFrequencyArrayX[j+1] & 0xff) <<  8) |
-                    ( timeFrequencyArrayX[j+2]         << 16));
-        }
+        double[] doubles = toDoubleArray(timeFrequencyArrayX);
+            for(double i: doubles){
+                System.out.println(i);
+            }
 
-        for(double i: doubles){
-            System.out.println(i);
-        }
+        double[] forwardTransformation = forwardFFT(doubles);
+//          for (double i: forwardTransformation ){
+//              System.out.println(i);
+//          }
 
-        testFFT(doubles);
+        double[] backwardTransformation = backwardFFT(forwardTransformation);
+//          for (double i : backwardTransformation){
+//              System.out.println(i);
+//          }
+
+        byte[] bytes = toByteArray(forwardTransformation);
+//          for(byte i: bytes){
+//              System.out.println(i);
+//          }
     }
 
-    private static void testFFT(double[] doubles) throws FileNotFoundException {
+    public static double[] forwardFFT(double[] doubles) throws FileNotFoundException {
         int arraySize = 32768;
         double[] inputImag = new double[arraySize];
         double[] inputReal = new double[arraySize];
 
-        for(int i = 0; i < arraySize; i++){
+        for (int i = 0; i < arraySize; i++) {
             inputReal[i] = 0.0;
             inputImag[i] = 0.0;
         }
@@ -42,13 +49,11 @@ public class TestMusic {
 //            System.out.println(i);
 //        }
 
-        double[] newArray = FFT.fft(inputReal, inputImag, true);
+        return FFT.fft(inputReal, inputImag, true);
+    }
 
-//         for (double i: newArray ){
-//             System.out.println(i);
-//         }
-
-
+    public static double[] backwardFFT(double[] doubles){
+        int arraySize = 32768;
         //
         // Test code below to reverse the transformation back to the original.
         //
@@ -60,22 +65,30 @@ public class TestMusic {
             newInputReal[i] = 0.0;
             newInputImag[i] = 0.0;
 
-            newInputReal[ii] = newArray[i];
+            newInputReal[ii] = doubles[i];
             i++;
-            newInputImag[ii] = newArray[i];
+            newInputImag[ii] = doubles[i];
             ii++;
         }
 
-        double[] meow = FFT.fft(newInputReal, newInputImag, false);
-//        for(double i : meow){
-//            System.out.println(i);
-//        }
-//
-//        if (inputImag[1] == meow[1]){
-//            System.out.println();
-//            System.out.println("yay");
-//        } else{
-//            System.out.println("boo");
-//        }
+        return FFT.fft(newInputReal, newInputImag, false);
+    }
+    public static byte[] toByteArray(double[] doubleArray){
+        int times = Double.SIZE / Byte.SIZE;
+        byte[] bytes = new byte[doubleArray.length * times];
+        for(int i=0;i<doubleArray.length;i++){
+            ByteBuffer.wrap(bytes, i*times, times).putDouble(doubleArray[i]);
+        }
+        return bytes;
+    }
+
+    public static double[] toDoubleArray(byte[] byteArray){
+        double[] doubles = new double[byteArray.length / 3];
+        for (int i = 0, j = 0; i != doubles.length; ++i, j += 3) {
+            doubles[i] = (double)( (byteArray[j] & 0xff) |
+                    ((byteArray[j+1] & 0xff) <<  8) |
+                    ( byteArray[j+2]         << 16));
+        }
+        return doubles;
     }
 }

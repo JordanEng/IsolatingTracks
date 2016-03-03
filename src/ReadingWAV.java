@@ -47,4 +47,19 @@ public class ReadingWAV {
     public byte[] toByteArray(){
         return audioBytes;
     }
+
+    public static AudioInputStream writeBytesBackToStream(byte[] bytes) {
+        ByteArrayInputStream baiut = new ByteArrayInputStream(bytes);
+        AudioInputStream stream = null;
+        try {
+            stream = AudioSystem.getAudioInputStream(baiut);
+        } catch (UnsupportedAudioFileException | IOException e) {
+            e.printStackTrace();
+        }
+
+        if(stream.equals(null) || stream == null) {
+            System.out.println("WARNING: Stream read by byte array is null!");
+        }
+        return stream;
+    }
 }
