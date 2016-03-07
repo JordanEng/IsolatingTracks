@@ -5,7 +5,7 @@ import javax.sound.sampled.*;
 public class ReadingWAV {
 
     private AudioInputStream audioInputStream;
-    private AudioFormat format;
+    public AudioFormat format;
     private byte[] audioBytes;
 
     public ReadingWAV(File file){
@@ -36,11 +36,9 @@ public class ReadingWAV {
                     // Here, do something useful with the audio data that's
                     // now in the audioBytes array...
                 }
-            } catch (Exception ex) {
-                System.err.print(ex);
+            } catch (Exception ignored) {
             }
-        } catch (Exception e) {
-            System.err.print(e);
+        } catch (Exception ignored) {
         }
     }
 
@@ -48,7 +46,7 @@ public class ReadingWAV {
         return audioBytes;
     }
 
-    public static AudioInputStream writeBytesBackToStream(byte[] bytes) {
+    public AudioInputStream writeBytesBackToStream(byte[] bytes) {
         ByteArrayInputStream baiut = new ByteArrayInputStream(bytes);
         AudioInputStream stream = null;
         try {
@@ -57,7 +55,7 @@ public class ReadingWAV {
             e.printStackTrace();
         }
 
-        if(stream.equals(null) || stream == null) {
+        if(stream != null && stream.equals(null)) {
             System.out.println("WARNING: Stream read by byte array is null!");
         }
         return stream;

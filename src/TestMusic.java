@@ -13,9 +13,9 @@ public class TestMusic {
 //        }
 
         double[] doubles = toDoubleArray(timeFrequencyArrayX);
-            for(double i: doubles){
-                System.out.println(i);
-            }
+//          for(double i: doubles){
+//              System.out.println(i);
+//          }
 
         double[] forwardTransformation = forwardFFT(doubles);
 //          for (double i: forwardTransformation ){
@@ -31,6 +31,10 @@ public class TestMusic {
 //          for(byte i: bytes){
 //              System.out.println(i);
 //          }
+
+        //AudioInputStream endStream = audioRead.writeBytesBackToStream(bytes);
+
+        outWavFile("meow", audioRead.format);
     }
 
     public static double[] forwardFFT(double[] doubles) throws FileNotFoundException {
@@ -54,9 +58,8 @@ public class TestMusic {
 
     public static double[] backwardFFT(double[] doubles){
         int arraySize = 32768;
-        //
+
         // Test code below to reverse the transformation back to the original.
-        //
 
         double[] newInputReal = new double[arraySize];
         double[] newInputImag = new double[arraySize];
@@ -91,4 +94,18 @@ public class TestMusic {
         }
         return doubles;
     }
+
+    public static void outWavFile(String exportFileName, AudioFormat mainFormat)throws java.io.IOException {
+        {
+            File f = new File(exportFileName + ".wav");
+            File f2 = new File(exportFileName);
+            long l = f.length();
+            FileInputStream fi = new FileInputStream(f);
+            AudioInputStream ai = new AudioInputStream(fi,mainFormat,l/4);
+            AudioSystem.write(ai, AudioFileFormat.Type.WAVE, f2);
+            fi.close();
+            f.delete();
+        }
+    }
+
 }
