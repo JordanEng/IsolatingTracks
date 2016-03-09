@@ -2,41 +2,50 @@
 import java.io.*;
 import javax.sound.sampled.*;
 import java.nio.ByteBuffer;
+import java.util.Scanner;
 
 public class TestMusic {
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException{
-        ReadingWAV audioRead = new ReadingWAV(new File("magic.wav"));
+    public static void main(String[] args) throws UnsupportedAudioFileException, IOException {
+        ReadingWAV audioRead = new ReadingWAV(new File("done.wav"));
         byte[] timeFrequencyArrayX = audioRead.toByteArray();
+//
+////        for(byte i: timeFrequencyArrayX){
+////            System.out.println(i);
+////        }
+//
+//        double[] doubles = toDoubleArray(timeFrequencyArrayX);
+////          for(double i: doubles){
+////              System.out.println(i);
+////          }
+//
+//        double[] forwardTransformation = forwardFFT(doubles);
+////          for (double i: forwardTransformation ){
+////              System.out.println(i);
+////          }
+//
+//        double[] backwardTransformation = backwardFFT(forwardTransformation);
+////          for (double i : backwardTransformation){
+////              System.out.println(i);
+////          }
+//
+//        byte[] bytes = toByteArray(forwardTransformation);
+////          for(byte i: bytes){
+////              System.out.println(i);
+////          }
 
-//        for(byte i: timeFrequencyArrayX){
-//            System.out.println(i);
+//        byte[] bytes = new byte[32768];
+//
+//        Scanner timeSignal = new Scanner(new File("signal.txt"));
+//        int i = 0;
+//
+//        while(timeSignal.hasNextDouble()){
+//            bytes[i] = (byte)timeSignal.nextDouble();
+//            timeSignal.nextDouble();
+//            i++;
 //        }
 
-        double[] doubles = toDoubleArray(timeFrequencyArrayX);
-//          for(double i: doubles){
-//              System.out.println(i);
-//          }
-
-        double[] forwardTransformation = forwardFFT(doubles);
-//          for (double i: forwardTransformation ){
-//              System.out.println(i);
-//          }
-
-        double[] backwardTransformation = backwardFFT(forwardTransformation);
-//          for (double i : backwardTransformation){
-//              System.out.println(i);
-//          }
-
-        byte[] bytes = toByteArray(forwardTransformation);
-//          for(byte i: bytes){
-//              System.out.println(i);
-//          }
-
-        //AudioInputStream endStream = audioRead.writeBytesBackToStream(bytes);
-
-        outWavFile("meow", audioRead.format);
-    }
-
+        outWavFile(timeFrequencyArrayX);
+}
     public static double[] forwardFFT(double[] doubles) throws FileNotFoundException {
         int arraySize = 32768;
         double[] inputImag = new double[arraySize];
@@ -76,6 +85,7 @@ public class TestMusic {
 
         return FFT.fft(newInputReal, newInputImag, false);
     }
+
     public static byte[] toByteArray(double[] doubleArray){
         int times = Double.SIZE / Byte.SIZE;
         byte[] bytes = new byte[doubleArray.length * times];
@@ -95,17 +105,48 @@ public class TestMusic {
         return doubles;
     }
 
-    public static void outWavFile(String exportFileName, AudioFormat mainFormat)throws java.io.IOException {
+    public static void outWavFile(byte[] totalByteArray)throws java.io.IOException {
         {
-            File f = new File(exportFileName + ".wav");
-            File f2 = new File(exportFileName);
-            long l = f.length();
-            FileInputStream fi = new FileInputStream(f);
-            AudioInputStream ai = new AudioInputStream(fi,mainFormat,l/4);
-            AudioSystem.write(ai, AudioFileFormat.Type.WAVE, f2);
-            fi.close();
-            f.delete();
+            BufferedOutputStream bos = null;
+            try {
+                //create an object of FileOutputStream
+                FileOutputStream fos = new FileOutputStream(new File("Transformed Output.txt"));
+
+                //create an object of BufferedOutputStream
+                bos = new BufferedOutputStream(fos);
+
+/*
+* To write byte array to file use,
+* public void write(byte[] b) method of BufferedOutputStream
+* class.
+*/
+                System.out.println("Writing byte array to file");
+
+//                for(byte i: totalByteArray){
+//                    bos.write(i);
+//                }
+
+                bos.write(totalByteArray);
+
+                System.out.println("File written");
+            } catch (FileNotFoundException fnfe) {
+                System.out.println("Specified file not found" + fnfe);
+            } catch (IOException ioe) {
+                System.out.println("Error while writing file" + ioe);
+            } finally {
+                if (bos != null) {
+                    try {
+
+                        //flush the BufferedOutputStream
+                        bos.flush();
+
+                        //close the BufferedOutputStream
+                        bos.close();
+
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
         }
     }
-
 }
