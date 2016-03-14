@@ -33,8 +33,6 @@ public class ReadingWAV {
                     // Calculate the number of frames actually read.
                     numFramesRead = numBytesRead / bytesPerFrame;
                     totalFramesRead += numFramesRead;
-                    // Here, do something useful with the audio data that's
-                    // now in the audioBytes array...
                 }
             } catch (Exception ignored) {
             }
@@ -45,6 +43,8 @@ public class ReadingWAV {
     public byte[] toByteArray(){
         return audioBytes;
     }
+
+    public AudioInputStream returnStream(){return audioInputStream;}
 
     public AudioInputStream writeBytesBackToStream(byte[] bytes) {
         ByteArrayInputStream baiut = new ByteArrayInputStream(bytes);

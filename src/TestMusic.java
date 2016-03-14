@@ -2,17 +2,17 @@
 import java.io.*;
 import javax.sound.sampled.*;
 import java.nio.ByteBuffer;
-import java.util.Scanner;
+import javax.sound.sampled.AudioFormat;
 
 public class TestMusic {
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException {
-        ReadingWAV audioRead = new ReadingWAV(new File("done.wav"));
+        ReadingWAV audioRead = new ReadingWAV(new File("magic.wav"));
         byte[] timeFrequencyArrayX = audioRead.toByteArray();
-//
-////        for(byte i: timeFrequencyArrayX){
-////            System.out.println(i);
-////        }
-//
+
+        for(byte i: timeFrequencyArrayX){
+            System.out.println(i);
+        }
+
 //        double[] doubles = toDoubleArray(timeFrequencyArrayX);
 ////          for(double i: doubles){
 ////              System.out.println(i);
@@ -44,8 +44,12 @@ public class TestMusic {
 //            i++;
 //        }
 
-        outWavFile(timeFrequencyArrayX);
-}
+        AudioInputStream initialStream = audioRead.returnStream();
+        outWavFile(timeFrequencyArrayX, initialStream);
+
+
+
+    }
     public static double[] forwardFFT(double[] doubles) throws FileNotFoundException {
         int arraySize = 32768;
         double[] inputImag = new double[arraySize];
@@ -105,37 +109,44 @@ public class TestMusic {
         return doubles;
     }
 
-    public static void outWavFile(byte[] totalByteArray)throws java.io.IOException {
+    public static void outWavFile(byte[] totalByteArray, AudioInputStream initialStream)throws java.io.IOException {
         {
+//            File fileOut = new File("transmitted.wav");
+//
+//            System.out.println("Writing byte array to file");
+//
+//            AudioSystem.write(initialStream, AudioFileFormat.Type.WAVE, fileOut);
+//
+//            System.out.println("File written");
+
             BufferedOutputStream bos = null;
-            try {
-                //create an object of FileOutputStream
-                FileOutputStream fos = new FileOutputStream(new File("Transformed Output.txt"));
+            ByteArrayInputStream bais = new ByteArrayInputStream(totalByteArray);
+            AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,32,8,1,1,1,true);
 
-                //create an object of BufferedOutputStream
-                bos = new BufferedOutputStream(fos);
+            File fileOut = new File("transmitted.wav");
 
-/*
-* To write byte array to file use,
-* public void write(byte[] b) method of BufferedOutputStream
-* class.
-*/
+            long length = (long)(totalByteArray.length / audioFormat.getFrameSize());
+            AudioInputStream audioInputStreamTemp = new AudioInputStream(bais, audioFormat, length);
+            int bytesPerFrame = audioInputStreamTemp.getFormat().getFrameSize();
+
+            try{
+
+                AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
+
                 System.out.println("Writing byte array to file");
 
-//                for(byte i: totalByteArray){
-//                    bos.write(i);
-//                }
-
-                bos.write(totalByteArray);
+                AudioSystem.write(audioInputStreamTemp, fileType, fileOut);
 
                 System.out.println("File written");
-            } catch (FileNotFoundException fnfe) {
-                System.out.println("Specified file not found" + fnfe);
-            } catch (IOException ioe) {
-                System.out.println("Error while writing file" + ioe);
-            } finally {
-                if (bos != null) {
-                    try {
+
+
+            }catch(FileNotFoundException fnfe){
+                System.out.println("Specified file not found " + fnfe);
+            }catch(IOException ioe) {
+                System.out.println("Error while writing file " + ioe);
+            }finally{
+                if(bos != null){
+                    try{
 
                         //flush the BufferedOutputStream
                         bos.flush();
@@ -143,8 +154,7 @@ public class TestMusic {
                         //close the BufferedOutputStream
                         bos.close();
 
-                    } catch (Exception ignored) {
-                    }
+                    }catch(Exception e){}
                 }
             }
         }
